@@ -7,10 +7,10 @@ A box is showing growing and shrinking, and visualization
 data is printed to STDOUT.
 
 Running:
-./growing_box.py 1> growing_box.json
+./morphing_box.py 1> morphing_box.json
 
 Visualizing:
-Drag growing_box.json onto the window: https://review.github.io/
+Drag morphing_box.json onto the window: https://review.github.io/
 """
 
 # Kludge to import logger from a relative path
@@ -27,7 +27,7 @@ BOX_ROT = [0, 0, 0, 1]
 VISUALIZATION_STEP = 1
 
 
-def growing_box():
+def morphing_box():
     """A simple example of changing the shape of an object."""
 
     # Create the logger
@@ -74,4 +74,4 @@ def growing_box():
 
 
 if __name__ == '__main__':
-    growing_box()
+    morphing_box()
