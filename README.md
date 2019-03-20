@@ -7,3 +7,5 @@ This library needs to be setup to be pip installable, but the functionality work
 # Ideas
 
 1. Create a context manager instead of manually calling `new_frame()`.
+2. Have `add_*` automatically create the initial frame?
+3. Make all parameters to `add_*` optional.

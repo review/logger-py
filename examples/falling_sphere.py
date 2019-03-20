@@ -16,7 +16,7 @@ Plotting (https://github.com/anthonyjclark/scripts/blob/master/piplot.py):
 piplot.py -f falling_sphere.csv -x t
 
 Visualizing:
-Drag falling_sphere.csv onto the window: https://review.github.io/
+Drag falling_sphere.json onto the window: https://review.github.io/
 """
 
 # Kludge to import logger from a relative path

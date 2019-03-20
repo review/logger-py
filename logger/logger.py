@@ -103,18 +103,34 @@ class Logger(object):
         """
         self.log_data["frames"].append({})
 
-    def enough_motion(self, name, pos, quat, t_tol=0.01, r_tol=0.01):
+    def enough_motion(self, name, t, r, s, t_tol=0.01, r_tol=0.01, s_tol=0.):
         """Return true if object has moved more than tolerance."""
-        return name not in self.positions or \
-               abs(pos[0] - self.positions[name][0]) > t_tol or \
-               abs(pos[1] - self.positions[name][1]) > t_tol or \
-               abs(pos[2] - self.positions[name][2]) > t_tol or \
-               abs(quat[0] - self.positions[name][3]) > r_tol or \
-               abs(quat[1] - self.positions[name][4]) > r_tol or \
-               abs(quat[2] - self.positions[name][5]) > r_tol or \
-               abs(quat[3] - self.positions[name][6]) > r_tol
 
-    def add_to_frame(self, name, pos, quat):
+        # Object has not yet been updated
+        if name not in self.positions:
+            return True
+
+        obj_pos = self.positions[name]
+
+        has_moved = abs(t[0] - obj_pos[0]) > t_tol or \
+                    abs(t[1] - obj_pos[1]) > t_tol or \
+                    abs(t[2] - obj_pos[2]) > t_tol
+
+        has_rotated = abs(r[0] - obj_pos[3]) > r_tol or \
+                      abs(r[1] - obj_pos[4]) > r_tol or \
+                      abs(r[2] - obj_pos[5]) > r_tol or \
+                      abs(r[3] - obj_pos[6]) > r_tol
+
+        if s is not None:
+            has_scaled = abs(s[0] - obj_pos[7]) > t_tol or \
+                         abs(s[1] - obj_pos[8]) > t_tol or \
+                         abs(s[2] - obj_pos[9]) > t_tol
+        else:
+            has_scaled = False
+
+        return has_moved or has_rotated or has_scaled
+
+    def add_to_frame(self, name, pos, quat, scale=None):
         """Update an objects position by adding its new transform to
         the current frame.
 
@@ -126,21 +142,25 @@ class Logger(object):
         pos  : translation
         quat : rotation as quaternion (qx, qy, qz, qw)
         """
-        if self.enough_motion(name, pos, quat):
+        if self.enough_motion(name, pos, quat, scale):
             self.log_data["frames"][-1][name] = {
                 "t": pos,
                 "r": quat,
             }
-            self.positions[name] = list(pos) + list(quat)
 
-    def add_frame(self, name, pos, quat):
+            if scale is not None:
+                self.log_data["frames"][-1][name]["s"] = scale
+
+            self.positions[name] = list(pos) + list(quat) + list(scale)
+
+    def add_frame(self, name, pos, quat, scale=None):
         """A method for adding a single object to the frame.
 
         For most use cases, you will want to manually create a frame,
         and then add indvividual objects to the frame.
         """
         self.new_frame()
-        self.add_to_frame(name, pos, quat)
+        self.add_to_frame(name, pos, quat, scale)
 
     def to_string(self, compact=False):
         """Convert logged data to a string.
