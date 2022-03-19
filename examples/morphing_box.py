@@ -15,13 +15,14 @@ Drag morphing_box.json onto the window: https://review.github.io/
 
 # Kludge to import logger from a relative path
 from sys import path, stderr
-path.append('../logger')
+
+path.append("../logger")
 from logger import Logger
 
 BOX_NAME = "box"
 BOX_SIZE = [0.25, 0.5, 0.1]
 BOX_COLOR = [1, 1, 0, 1]
-BOX_POS = [0, BOX_SIZE[1]/2, 0]
+BOX_POS = [0, BOX_SIZE[1] / 2, 0]
 BOX_ROT = [0, 0, 0, 1]
 
 VISUALIZATION_STEP = 1
@@ -31,7 +32,7 @@ def morphing_box():
     """A simple example of changing the shape of an object."""
 
     # Create the logger
-    logger = Logger(VISUALIZATION_STEP)
+    logger = Logger("Morphing Box", VISUALIZATION_STEP)
 
     # Add all objects
     logger.add_box(BOX_NAME, *BOX_SIZE, BOX_COLOR)
@@ -73,5 +74,5 @@ def morphing_box():
     print(str(logger))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     morphing_box()
