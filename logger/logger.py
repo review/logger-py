@@ -12,7 +12,7 @@ DEFAULT_COLOR = (1, 1, 1, 1)
 class Logger(object):
     """A logger for review.github.io"""
 
-    def __init__(self, vis_step, name=None):
+    def __init__(self, name, vis_step):
         """Create a new logger instance.
 
         vis_step : time step between logged frame data
@@ -20,23 +20,27 @@ class Logger(object):
         """
         super(Logger, self).__init__()
 
-        self.log_data = {"objects": [], "frames": []}
+        self.log_data = {
+            "name": name,
+            "timeStep": vis_step,
+            "objects": [],
+            "frames": [],
+        }
         self.positions = {}
-
-        if name is not None:
-            self.log_data["name"] = name
 
         self.log_data["timeStep"] = vis_step
 
     def add_object(self, name, obj_type, scale, color):
         """Utility method called by add_*."""
 
-        self.log_data["objects"].append({
-            "name": name,
-            "mesh": obj_type,
-            "scale": scale,
-            "material": {"color": color}
-        })
+        self.log_data["objects"].append(
+            {
+                "name": name,
+                "mesh": obj_type,
+                "scale": scale,
+                "material": {"color": color},
+            }
+        )
 
     def add_sphere(self, name, radius, color=DEFAULT_COLOR):
         """Add a sphere to the logged data.
@@ -65,7 +69,7 @@ class Logger(object):
         color  : color of the object (defaults to white)
         """
         # Dividing by 2 because review expects radius values
-        self.add_object(name, "sphere", (xsize/2, ysize/2, zsize/2), color)
+        self.add_object(name, "sphere", (xsize / 2, ysize / 2, zsize / 2), color)
 
     def add_box(self, name, xsize, ysize, zsize, color=DEFAULT_COLOR):
         """Add a box (cuboid) to the logged data.
@@ -103,7 +107,7 @@ class Logger(object):
         """
         self.log_data["frames"].append({})
 
-    def enough_motion(self, name, t, r, s, t_tol=0.01, r_tol=0.01, s_tol=0.):
+    def enough_motion(self, name, t, r, s, t_tol=0.01, r_tol=0.01, s_tol=0.0):
         """Return true if object has moved more than tolerance."""
 
         # Object has not yet been updated
@@ -112,19 +116,25 @@ class Logger(object):
 
         obj_pos = self.positions[name]
 
-        has_moved = abs(t[0] - obj_pos[0]) > t_tol or \
-                    abs(t[1] - obj_pos[1]) > t_tol or \
-                    abs(t[2] - obj_pos[2]) > t_tol
+        has_moved = (
+            abs(t[0] - obj_pos[0]) > t_tol
+            or abs(t[1] - obj_pos[1]) > t_tol
+            or abs(t[2] - obj_pos[2]) > t_tol
+        )
 
-        has_rotated = abs(r[0] - obj_pos[3]) > r_tol or \
-                      abs(r[1] - obj_pos[4]) > r_tol or \
-                      abs(r[2] - obj_pos[5]) > r_tol or \
-                      abs(r[3] - obj_pos[6]) > r_tol
+        has_rotated = (
+            abs(r[0] - obj_pos[3]) > r_tol
+            or abs(r[1] - obj_pos[4]) > r_tol
+            or abs(r[2] - obj_pos[5]) > r_tol
+            or abs(r[3] - obj_pos[6]) > r_tol
+        )
 
         if s is not None:
-            has_scaled = abs(s[0] - obj_pos[7]) > t_tol or \
-                         abs(s[1] - obj_pos[8]) > t_tol or \
-                         abs(s[2] - obj_pos[9]) > t_tol
+            has_scaled = (
+                abs(s[0] - obj_pos[7]) > s_tol
+                or abs(s[1] - obj_pos[8]) > s_tol
+                or abs(s[2] - obj_pos[9]) > s_tol
+            )
         else:
             has_scaled = False
 
@@ -151,7 +161,8 @@ class Logger(object):
             if scale is not None:
                 self.log_data["frames"][-1][name]["s"] = scale
 
-            self.positions[name] = list(pos) + list(quat) + list(scale)
+            ls = list(scale) if scale else []
+            self.positions[name] = list(pos) + list(quat) + ls
 
     def add_frame(self, name, pos, quat, scale=None):
         """A method for adding a single object to the frame.
