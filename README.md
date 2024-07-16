@@ -15,3 +15,4 @@ python -m pip install .
 2. Have `add_*` automatically create the initial frame?
 3. Make all parameters to `add_*` optional.
 4. Automatically update first frame if subsequent frame changes position, rotation, scale, etc.
+5. Add ability to change color and visibility of objects (add to player).

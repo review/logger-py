@@ -183,6 +183,10 @@ class Logger(object):
         else:
             return json.dumps(self.log_data, sort_keys=True, indent=4)
 
+    def to_json(self):
+        """Convert logged data to a json object."""
+        return self.log_data
+
     def __str__(self):
         """Convert logged data to a string."""
         return self.to_string()
